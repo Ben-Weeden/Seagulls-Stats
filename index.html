@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Seagulls Stats">
+  <title>Tweed Seagulls | 2026 BMD</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    :root {
+      --bg:           #0c1120;
+      --surface:      #111827;
+      --surface2:     #1a2236;
+      --surface3:     #0f1929;
+      --border:       #1e2d45;
+      --accent:       #1d6ef5;
+      --accent-glow:  rgba(29,110,245,0.15);
+      --accent-light: #5b9ef9;
+      --text:         #e8edf5;
+      --text-muted:   #8496b0;
+      --text-dim:     #4a5e78;
+      --green:        #10b981;
+      --amber:        #f59e0b;
+      --red:          #ef4444;
+      --gold:         #fbbf24;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 72px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── HEADER ─────────────────────────────── */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: linear-gradient(180deg, #0a1020 0%, #0c1424 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .logo {
+      width: 46px;
+      height: 46px;
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      font-size: 17px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.3px;
+      line-height: 1.1;
+    }
+
+    .brand-text p {
+      font-size: 11px;
+      color: var(--accent-light);
+      font-weight: 500;
+      margin-top: 2px;
+      letter-spacing: 0.4px;
+    }
+
+    .season-badge {
+      margin-left: auto;
+      background: var(--accent-glow);
+      border: 1px solid var(--accent);
+      color: var(--accent-light);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.6px;
+    }
+
+    /* Round nav */
+    .round-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .nav-btn:active  { background: var(--accent); border-color: var(--accent); transform: scale(0.95); }
+    .nav-btn:disabled { opacity: 0.25; pointer-events: none; }
+
+    .round-pill {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .round-pill:active { border-color: var(--accent); }
+
+    .pill-round {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent-light);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .pill-opponent {
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
+      margin-top: 1px;
+    }
+
+    .pill-venue {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ─── CONTENT ─────────────────────────────── */
+    .content {
+      padding: 14px 14px 0;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* ─── CARD ─────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-header-icon {
+      font-size: 15px;
+    }
+
+    .card-header-title {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+    }
+
+    /* ─── STATS TABLE ─────────────────────────── */
+    .tbl {
+      width: 100%;
+    }
+
+    .tbl-head {
+      display: grid;
+      grid-template-columns: 1fr 68px 68px 72px;
+      background: var(--surface3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tbl-head > div {
+      padding: 7px 4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      text-align: center;
+    }
+    .tbl-head > div:first-child { text-align: left; padding-left: 14px; }
+
+    .tbl-row {
+      display: grid;
+      grid-template-columns: 1fr 68px 68px 72px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+    .tbl-row:last-child { border-bottom: none; }
+    .tbl-row.alt { background: rgba(255,255,255,0.018); }
+    .tbl-row.auto-row { background: rgba(29,110,245,0.05); }
+
+    .tbl-row > .cell {
+      padding: 9px 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cell.label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      padding-left: 14px;
+      justify-content: flex-start;
+    }
+
+    .auto-row .cell.label {
+      color: var(--accent-light);
+      font-weight: 600;
+      font-style: italic;
+      font-size: 12px;
+    }
+
+    .cell.total-cell {
+      background: rgba(29,110,245,0.07);
+      border-left: 1px solid var(--border);
+    }
+
+    /* Inputs */
+    input[type="number"] {
+      width: 56px;
+      height: 38px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      text-align: center;
+      font-family: inherit;
+      outline: none;
+      -moz-appearance: textfield;
+      transition: all 0.15s;
+    }
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input[type="number"]:focus {
+      border-color: var(--accent);
+      background: var(--accent-glow);
+      box-shadow: 0 0 0 3px rgba(29,110,245,0.12);
+    }
+    input[type="number"].has-value { border-color: #2a3f60; background: rgba(255,255,255,0.08); }
+
+    /* Auto computed values */
+    .auto-val {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--accent-light);
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .auto-val.pct-green { color: var(--green); }
+    .auto-val.pct-amber { color: var(--amber); }
+    .auto-val.pct-red   { color: var(--red); }
+    .auto-val.pct-nil   { color: var(--text-dim); }
+
+    .total-val {
+      font-size: 16px;
+      font-weight: 800;
+      color: #93c5fd;
+    }
+
+    /* ─── LAST PLAY OPTIONS ────────────────────── */
+    .lpo-head {
+      display: grid;
+      grid-template-columns: 1fr 68px 68px;
+      background: var(--surface3);
+      border-bottom: 1px solid var(--border);
+    }
+    .lpo-head > div {
+      padding: 7px 4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      text-align: center;
+    }
+    .lpo-head > div:first-child { text-align: left; padding-left: 14px; }
+
+    .lpo-row {
+      display: grid;
+      grid-template-columns: 1fr 68px 68px;
+      border-bottom: 1px solid var(--border);
+    }
+    .lpo-row:last-child { border-bottom: none; }
+    .lpo-row.alt { background: rgba(255,255,255,0.018); }
+
+    .lpo-row > .cell { padding: 8px 4px; display: flex; align-items: center; justify-content: center; }
+    .lpo-row > .cell.lbl-cell { padding-left: 10px; justify-content: flex-start; }
+
+    input[type="text"].opt-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid transparent;
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      padding: 2px 2px 2px 0;
+      transition: border-color 0.15s;
+    }
+    input[type="text"].opt-input::placeholder { color: var(--text-dim); }
+    input[type="text"].opt-input:focus { border-bottom-color: var(--accent); }
+
+    input[type="number"].lpo-num {
+      width: 56px;
+      height: 34px;
+      font-size: 14px;
+    }
+
+    /* ─── ROW NUMBER ───────────────────────────── */
+    .row-num {
+      font-size: 10px;
+      color: var(--text-dim);
+      width: 16px;
+      text-align: right;
+      margin-right: 6px;
+      flex-shrink: 0;
+    }
+
+    /* ─── BOTTOM NAV ────────────────────────────── */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(17,24,39,0.96);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border);
+      padding: 12px 16px 16px;
+    }
+
+    .dots-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--border);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    .dot.has-data { background: #1e4a30; border: 1px solid var(--green); }
+    .dot.active { background: var(--accent) !important; border-color: var(--accent) !important; transform: scale(1.4); }
+
+    /* ─── TOAST ─────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: var(--green);
+      color: white;
+      padding: 9px 22px;
+      border-radius: 24px;
+      font-size: 13px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s, transform 0.25s;
+      white-space: nowrap;
+      z-index: 200;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ─── ROUND PICKER MODAL ────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 100;
+      display: flex;
+      align-items: flex-end;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      background: var(--surface);
+      border-radius: 20px 20px 0 0;
+      border: 1px solid var(--border);
+      padding: 20px 16px 36px;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .modal-overlay.open .modal-sheet { transform: translateY(0); }
+
+    .modal-handle {
+      width: 36px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      margin: 0 auto 18px;
+    }
+
+    .modal-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    .modal-rounds {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .modal-round-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .modal-round-btn.has-data { border-color: #1e4a30; }
+    .modal-round-btn.is-current { background: var(--accent); border-color: var(--accent); }
+    .modal-round-btn:active { transform: scale(0.95); }
+
+    .mr-num {
+      font-size: 15px;
+      font-weight: 800;
+      color: white;
+      display: block;
+    }
+
+    .mr-opp {
+      font-size: 9px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .modal-round-btn.is-current .mr-opp { color: rgba(255,255,255,0.8); }
+  </style>
+</head>
+
+<body>
+
+  <!-- ─── HEADER ─── -->
+  <header class="header">
+    <div class="brand">
+      <!-- Seagull SVG Logo -->
+      <svg class="logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#1a3a6e"/>
+            <stop offset="100%" stop-color="#0a1a3e"/>
+          </radialGradient>
+        </defs>
+        <circle cx="50" cy="50" r="48" fill="url(#bg)" stroke="#1d6ef5" stroke-width="1.5"/>
+        <!-- Wings -->
+        <path d="M10 48 Q28 34 50 38 Q72 34 90 48 Q72 28 50 32 Q28 28 10 48Z" fill="white"/>
+        <!-- Body -->
+        <ellipse cx="50" cy="54" rx="8" ry="12" fill="white"/>
+        <!-- Head -->
+        <circle cx="50" cy="38" r="7" fill="white"/>
+        <!-- Beak -->
+        <path d="M57 38 L63 40 L57 42 Z" fill="#fbbf24"/>
+        <!-- Eye -->
+        <circle cx="53" cy="37" r="1.5" fill="#0a1a3e"/>
+        <!-- Tail -->
+        <path d="M44 64 L50 72 L56 64 L50 68 Z" fill="white" opacity="0.7"/>
+        <!-- Under wing shadow -->
+        <path d="M20 50 Q35 44 50 46 Q65 44 80 50 Q65 54 50 52 Q35 54 20 50Z" fill="rgba(255,255,255,0.15)"/>
+      </svg>
+      <div class="brand-text">
+        <h1>Tweed Seagulls</h1>
+        <p>Women's BMD Premiership</p>
+      </div>
+      <div class="season-badge">2026</div>
+    </div>
+
+    <div class="round-nav">
+      <button class="nav-btn" id="prevBtn" onclick="changeRound(-1)">‹</button>
+      <div class="round-pill" onclick="openModal()">
+        <div class="pill-round" id="pillRound">Round 1</div>
+        <div class="pill-opponent" id="pillOpponent">Western Clydesdales</div>
+        <div class="pill-venue" id="pillVenue">📍 Home</div>
+      </div>
+      <button class="nav-btn" id="nextBtn" onclick="changeRound(1)">›</button>
+    </div>
+  </header>
+
+  <!-- ─── CONTENT ─── -->
+  <main class="content">
+
+    <!-- Completion Stats -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-header-icon">📊</span>
+        <span class="card-header-title">Completion Stats</span>
+      </div>
+      <div class="tbl">
+        <div class="tbl-head">
+          <div>Metric</div><div>1H</div><div>2H</div><div>Total</div>
+        </div>
+
+        <!-- Completed Sets -->
+        <div class="tbl-row" id="row-cs">
+          <div class="cell label">Completed Sets</div>
+          <div class="cell"><input type="number" id="cs_h1" min="0" placeholder="0" oninput="onInput()"></div>
+          <div class="cell"><input type="number" id="cs_h2" min="0" placeholder="0" oninput="onInput()"></div>
+          <div class="cell total-cell"><span class="total-val" id="cs_tot">—</span></div>
+        </div>
+
+        <!-- Non Completed Sets -->
+        <div class="tbl-row alt" id="row-ncs">
+          <div class="cell label">Non Completed Sets</div>
+          <div class="cell"><input type="number" id="ncs_h1" min="0" placeholder="0" oninput="onInput()"></div>
+          <div class="cell"><input type="number" id="ncs_h2" min="0" placeholder="0" oninput="onInput()"></div>
+          <div class="cell total-cell"><span class="total-val" id="ncs_tot">—</span></div>
+        </div>
+
+        <!-- Combined (auto) -->
+        <div class="tbl-row auto-row">
+          <div class="cell label">Combined</div>
+          <div class="cell"><span class="auto-val" id="comb_h1">—</span></div>
+          <div class="cell"><span class="auto-val" id="comb_h2">—</span></div>
+          <div class="cell total-cell"><span class="auto-val" id="comb_tot">—</span></div>
+        </div>
+
+        <!-- Completion % (auto) -->
+        <div class="tbl-row auto-row alt">
+          <div class="cell label">Completion %</div>
+          <div class="cell"><span class="auto-val pct-nil" id="pct_h1">—</span></div>
+          <div class="cell"><span class="auto-val pct-nil" id="pct_h2">—</span></div>
+          <div class="cell total-cell"><span class="auto-val pct-nil" id="pct_tot">—</span></div>
+        </div>
+
+        <!-- Penalties For -->
+        <div class="tbl-row">
+          <div class="cell label">Penalties For</div>
+          <div class="cell"><input type="number" id="pf_h1" min="0" placeholder="0" oninput="onInput()"></div>
+          <div class="cell"><input type="number" id="pf_h2" min="0" placeholder="0" oninput="onInput()"></div>
+          <div class="cell total-cell"><span class="total-val" id="pf_tot">—</span></div>
+        </div>
+
+        <!-- Penalties Against -->
+        <div class="tbl-row alt">
+          <div class="cell label">Penalties Against</div>
+          <div class="cell"><input type="number" id="pa_h1" min="0" placeholder="0" oninput="onInput()"></div>
+          <div class="cell"><input type="number" id="pa_h2" min="0" placeholder="0" oninput="onInput()"></div>
+          <div class="cell total-cell"><span class="total-val" id="pa_tot">—</span></div>
+        </div>
+
+        <!-- Errors -->
+        <div class="tbl-row">
+          <div class="cell label">Errors</div>
+          <div class="cell"><input type="number" id="err_h1" min="0" placeholder="0" oninput="onInput()"></div>
+          <div class="cell"><input type="number" id="err_h2" min="0" placeholder="0" oninput="onInput()"></div>
+          <div class="cell total-cell"><span class="total-val" id="err_tot">—</span></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Last Play Options -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-header-icon">🎯</span>
+        <span class="card-header-title">Last Play Options</span>
+      </div>
+      <div class="lpo-head">
+        <div>Option</div><div>1H</div><div>2H</div>
+      </div>
+      <div id="lpoBody"></div>
+    </div>
+
+  </main>
+
+  <!-- ─── TOAST ─── -->
+  <div class="toast" id="toast">Saved ✓</div>
+
+  <!-- ─── ROUND PICKER MODAL ─── -->
+  <div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+    <div class="modal-sheet" id="modalSheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Select Round</div>
+      <div class="modal-rounds" id="modalRounds"></div>
+    </div>
+  </div>
+
+  <!-- ─── BOTTOM DOTS ─── -->
+  <div class="bottom-bar">
+    <div class="dots-wrap" id="dotsWrap"></div>
+  </div>
+
+  <script>
+    // ─── FIXTURES ─────────────────────────────────────
+    const FIXTURES = [
+      { round:1,  opponent:'Western Clydesdales',   venue:'Home' },
+      { round:2,  opponent:'Northern Pride',         venue:'Home' },
+      { round:3,  opponent:'Ipswich Jets',           venue:'Away' },
+      { round:4,  opponent:'Burleigh Bears',         venue:'Away' },
+      { round:5,  opponent:'Brisbane Tigers',        venue:'Home' },
+      { round:6,  opponent:'Wynnum Manly Seagulls',  venue:'Home' },
+      { round:7,  opponent:'CQ Capras',              venue:'Away' },
+      { round:8,  opponent:'Souths Logan Magpies',   venue:'Away' },
+      { round:9,  opponent:'Mackay Cutters',         venue:'Away' },
+      { round:10, opponent:'Sunshine Coast Falcons', venue:'Away' },
+      { round:11, opponent:'Norths Devils',          venue:'Away' },
+    ];
+
+    const STAT_FIELDS = ['cs_h1','cs_h2','ncs_h1','ncs_h2','pf_h1','pf_h2','pa_h1','pa_h2','err_h1','err_h2'];
+    const LPO_ROWS = 15;
+
+    // ─── DEFAULT SEED DATA (rounds 1–3) ───────────────
+    const SEEDS = {
+      1: { cs_h1:15, cs_h2:8,  ncs_h1:5, ncs_h2:5  },
+      2: { cs_h1:11, cs_h2:13, ncs_h1:5, ncs_h2:4  },
+      3: { cs_h1:10, cs_h2:9,  ncs_h1:7, ncs_h2:2  },
+    };
+
+    // ─── STATE ────────────────────────────────────────
+    let cur = 1;
+    let db  = {};
+
+    function emptyRound() {
+      return {
+        stats: Object.fromEntries(STAT_FIELDS.map(f => [f, ''])),
+        lpo: Array.from({ length: LPO_ROWS }, () => ({ option:'', h1:'', h2:'' })),
+      };
+    }
+
+    function initDB() {
+      const raw = localStorage.getItem('sgls_bmd_v2');
+      if (raw) {
+        db = JSON.parse(raw);
+        // Ensure all 11 rounds exist
+        FIXTURES.forEach(f => { if (!db[f.round]) db[f.round] = emptyRound(); });
+      } else {
+        FIXTURES.forEach(f => { db[f.round] = emptyRound(); });
+        // Seed rounds 1-3 sets data
+        Object.entries(SEEDS).forEach(([r, vals]) => {
+          Object.entries(vals).forEach(([k,v]) => { db[r].stats[k] = v; });
+        });
+        persist();
+      }
+    }
+
+    function persist() {
+      localStorage.setItem('sgls_bmd_v2', JSON.stringify(db));
+    }
+
+    // ─── ROUND PICKER MODAL ───────────────────────────
+    function openModal() {
+      const overlay = document.getElementById('modalOverlay');
+      const grid    = document.getElementById('modalRounds');
+      grid.innerHTML = '';
+      FIXTURES.forEach(f => {
+        const hasData = roundHasData(f.round);
+        const btn = document.createElement('div');
+        btn.className = 'modal-round-btn' + (hasData ? ' has-data' : '') + (f.round === cur ? ' is-current' : '');
+        btn.innerHTML = `<span class="mr-num">R${f.round}</span><div class="mr-opp">${f.opponent.split(' ')[0]}</div>`;
+        btn.onclick = () => { closeModal(); setRound(f.round); };
+        grid.appendChild(btn);
+      });
+      overlay.classList.add('open');
+    }
+
+    function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+
+    function handleOverlayClick(e) {
+      if (e.target === document.getElementById('modalOverlay')) closeModal();
+    }
+
+    // ─── BUILD LPO ROWS ────────────────────────────────
+    function buildLPO() {
+      const body = document.getElementById('lpoBody');
+      body.innerHTML = '';
+      for (let i = 0; i < LPO_ROWS; i++) {
+        const alt = i % 2 === 1 ? ' alt' : '';
+        const row = document.createElement('div');
+        row.className = `lpo-row${alt}`;
+        row.innerHTML = `
+          <div class="cell lbl-cell">
+            <span class="row-num">${i+1}</span>
+            <input type="text" class="opt-input" id="lpo_opt_${i}" placeholder="Enter option…" oninput="onLPO(${i})">
+          </div>
+          <div class="cell"><input type="number" class="lpo-num" id="lpo_h1_${i}" min="0" placeholder="0" oninput="onLPO(${i})"></div>
+          <div class="cell"><input type="number" class="lpo-num" id="lpo_h2_${i}" min="0" placeholder="0" oninput="onLPO(${i})"></div>
+        `;
+        body.appendChild(row);
+      }
+    }
+
+    // ─── LOAD ROUND INTO UI ────────────────────────────
+    function loadRound(r) {
+      const d = db[r];
+      const f = FIXTURES[r - 1];
+
+      // Header
+      document.getElementById('pillRound').textContent    = `Round ${r}`;
+      document.getElementById('pillOpponent').textContent = f.opponent;
+      document.getElementById('pillVenue').textContent    = (f.venue === 'Home' ? '🏠 Home' : '✈️ Away');
+      document.getElementById('prevBtn').disabled = r === 1;
+      document.getElementById('nextBtn').disabled = r === 11;
+
+      // Stats fields
+      STAT_FIELDS.forEach(field => {
+        const el = document.getElementById(field);
+        const val = d.stats[field];
+        el.value = val !== '' && val !== null && val !== undefined ? val : '';
+        el.classList.toggle('has-value', val !== '' && val !== null && val !== undefined);
+      });
+
+      // LPO rows
+      for (let i = 0; i < LPO_ROWS; i++) {
+        const lpo = d.lpo[i] || { option:'', h1:'', h2:'' };
+        document.getElementById(`lpo_opt_${i}`).value = lpo.option || '';
+        const h1el = document.getElementById(`lpo_h1_${i}`);
+        const h2el = document.getElementById(`lpo_h2_${i}`);
+        h1el.value = lpo.h1 !== '' && lpo.h1 !== undefined ? lpo.h1 : '';
+        h2el.value = lpo.h2 !== '' && lpo.h2 !== undefined ? lpo.h2 : '';
+      }
+
+      recalc();
+      updateDots();
+    }
+
+    // ─── RECALCULATE ────────────────────────────────────
+    function pct(completed, combined) {
+      if (!combined || combined === 0) return null;
+      return Math.round((completed / combined) * 100);
+    }
+
+    function setPct(id, val) {
+      const el = document.getElementById(id);
+      el.className = 'auto-val';
+      if (val === null) { el.textContent = '—'; el.classList.add('pct-nil'); return; }
+      el.textContent = val + '%';
+      if (val >= 75) el.classList.add('pct-green');
+      else if (val >= 60) el.classList.add('pct-amber');
+      else el.classList.add('pct-red');
+    }
+
+    function numVal(id) {
+      const v = document.getElementById(id).value;
+      return v === '' ? null : parseInt(v, 10);
+    }
+
+    function setTot(id, a, b) {
+      const el = document.getElementById(id);
+      if (a === null && b === null) { el.textContent = '—'; return; }
+      el.textContent = (a || 0) + (b || 0);
+    }
+
+    function setAuto(id, val) {
+      const el = document.getElementById(id);
+      el.className = 'auto-val';
+      el.textContent = val === null ? '—' : val;
+    }
+
+    function recalc() {
+      const cs1  = numVal('cs_h1'),  cs2  = numVal('cs_h2');
+      const ncs1 = numVal('ncs_h1'), ncs2 = numVal('ncs_h2');
+
+      // Totals
+      setTot('cs_tot',  cs1, cs2);
+      setTot('ncs_tot', ncs1, ncs2);
+      setTot('pf_tot',  numVal('pf_h1'),  numVal('pf_h2'));
+      setTot('pa_tot',  numVal('pa_h1'),  numVal('pa_h2'));
+      setTot('err_tot', numVal('err_h1'), numVal('err_h2'));
+
+      // Combined
+      const c1 = (cs1 !== null || ncs1 !== null) ? (cs1||0) + (ncs1||0) : null;
+      const c2 = (cs2 !== null || ncs2 !== null) ? (cs2||0) + (ncs2||0) : null;
+      const ct = (c1 !== null || c2 !== null) ? (c1||0) + (c2||0) : null;
+      const cst = (cs1 !== null || cs2 !== null) ? (cs1||0) + (cs2||0) : null;
+
+      setAuto('comb_h1',  c1);
+      setAuto('comb_h2',  c2);
+      setAuto('comb_tot', ct);
+
+      // Completion %
+      setPct('pct_h1',  pct(cs1,  c1));
+      setPct('pct_h2',  pct(cs2,  c2));
+      setPct('pct_tot', pct(cst,  ct));
+
+      // Style inputs with values
+      STAT_FIELDS.forEach(f => {
+        const el = document.getElementById(f);
+        el.classList.toggle('has-value', el.value !== '');
+      });
+    }
+
+    // ─── INPUT HANDLERS ─────────────────────────────────
+    function onInput() {
+      recalc();
+      saveRound();
+    }
+
+    function onLPO(i) {
+      const lpo = db[cur].lpo[i] || {};
+      lpo.option = document.getElementById(`lpo_opt_${i}`).value;
+      lpo.h1     = document.getElementById(`lpo_h1_${i}`).value;
+      lpo.h2     = document.getElementById(`lpo_h2_${i}`).value;
+      db[cur].lpo[i] = lpo;
+      persist();
+      showToast();
+    }
+
+    function saveRound() {
+      STAT_FIELDS.forEach(f => {
+        const v = document.getElementById(f).value;
+        db[cur].stats[f] = v === '' ? '' : parseInt(v, 10);
+      });
+      persist();
+      showToast();
+    }
+
+    // ─── NAVIGATION ─────────────────────────────────────
+    function setRound(r) {
+      cur = r;
+      loadRound(cur);
+    }
+
+    function changeRound(dir) {
+      const next = cur + dir;
+      if (next < 1 || next > 11) return;
+      setRound(next);
+    }
+
+    // ─── DOTS ───────────────────────────────────────────
+    function roundHasData(r) {
+      const d = db[r];
+      if (!d) return false;
+      return STAT_FIELDS.some(f => d.stats[f] !== '' && d.stats[f] !== null) ||
+             d.lpo.some(l => l.option || l.h1 || l.h2);
+    }
+
+    function updateDots() {
+      const wrap = document.getElementById('dotsWrap');
+      wrap.innerHTML = '';
+      FIXTURES.forEach(f => {
+        const dot = document.createElement('div');
+        dot.className = 'dot' + (roundHasData(f.round) ? ' has-data' : '') + (f.round === cur ? ' active' : '');
+        dot.onclick = () => setRound(f.round);
+        dot.title = `Round ${f.round}`;
+        wrap.appendChild(dot);
+      });
+    }
+
+    // ─── TOAST ──────────────────────────────────────────
+    let toastTimer;
+    function showToast() {
+      const t = document.getElementById('toast');
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 1200);
+    }
+
+    // ─── INIT ────────────────────────────────────────────
+    buildLPO();
+    initDB();
+    loadRound(1);
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>

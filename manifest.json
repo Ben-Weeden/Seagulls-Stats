@@ -1,0 +1,11 @@
+{
+  "name": "Tweed Seagulls BMD 2026",
+  "short_name": "Seagulls Stats",
+  "description": "Tweed Seagulls Women's BMD Premiership Stats Tracker 2026",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0c1120",
+  "theme_color": "#0c1120",
+  "orientation": "portrait-primary",
+  "icons": []
+}
