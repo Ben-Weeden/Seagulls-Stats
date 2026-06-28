@@ -353,6 +353,86 @@
       flex-shrink: 0;
     }
 
+    /* ─── SEASON VIEW ───────────────────────────── */
+    #seasonView { display: none; }
+    #seasonView.active { display: block; }
+    #mainContent.hidden { display: none; }
+
+    .season-header {
+      background: linear-gradient(135deg, #0f2a4a 0%, #1a3a6e 100%);
+      border: 1px solid #1e4a8a;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .season-icon { font-size: 32px; }
+
+    .season-hdr-text h2 {
+      font-size: 16px;
+      font-weight: 800;
+      color: white;
+    }
+
+    .season-hdr-text p {
+      font-size: 12px;
+      color: var(--accent-light);
+      margin-top: 3px;
+    }
+
+    .season-stat-row {
+      display: grid;
+      grid-template-columns: 1fr 68px 68px 72px;
+      border-bottom: 1px solid var(--border);
+    }
+    .season-stat-row:last-child { border-bottom: none; }
+    .season-stat-row.alt { background: rgba(255,255,255,0.018); }
+    .season-stat-row.auto { background: rgba(29,110,245,0.05); }
+
+    .season-stat-row > .cell { padding: 10px 4px; display: flex; align-items: center; justify-content: center; }
+    .season-stat-row > .cell.label { font-size: 13px; font-weight: 600; padding-left: 14px; justify-content: flex-start; }
+    .season-stat-row.auto > .cell.label { color: var(--accent-light); font-style: italic; font-size: 12px; }
+
+    .s-val {
+      font-size: 15px;
+      font-weight: 800;
+      color: #93c5fd;
+    }
+    .s-val.auto-col { color: var(--accent-light); }
+    .s-val.pct-green { color: var(--green); }
+    .s-val.pct-amber { color: var(--amber); }
+    .s-val.pct-red   { color: var(--red); }
+
+    .rounds-counted {
+      font-size: 11px;
+      color: var(--text-dim);
+      text-align: center;
+      padding: 10px;
+      font-style: italic;
+    }
+
+    /* Season bottom button */
+    .season-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .season-btn.active { color: var(--accent-light); border-color: var(--border); background: var(--surface2); }
+    .season-btn-icon { font-size: 17px; }
+    .season-btn-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; }
+
     /* ─── BOTTOM NAV ────────────────────────────── */
     .bottom-bar {
       position: fixed;
@@ -536,7 +616,7 @@
   </header>
 
   <!-- ─── CONTENT ─── -->
-  <main class="content">
+  <main class="content" id="mainContent">
 
     <!-- Completion Stats -->
     <div class="card">
@@ -622,6 +702,76 @@
 
   </main>
 
+  <!-- ─── SEASON VIEW ─── -->
+  <div id="seasonView">
+    <div class="content">
+      <div class="season-header">
+        <div class="season-icon">📈</div>
+        <div class="season-hdr-text">
+          <h2>Season Averages</h2>
+          <p id="seasonSubtitle">2026 BMD Premiership</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-header-icon">📊</span>
+          <span class="card-header-title">Metric Averages Per Game</span>
+        </div>
+        <div>
+          <div class="season-stat-row" style="background:var(--surface3);border-bottom:1px solid var(--border)">
+            <div class="cell label" style="font-size:10px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.8px">Metric</div>
+            <div class="cell" style="font-size:10px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.8px">1H</div>
+            <div class="cell" style="font-size:10px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.8px">2H</div>
+            <div class="cell" style="font-size:10px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.8px;background:rgba(29,110,245,.07);border-left:1px solid var(--border)">Avg</div>
+          </div>
+          <div class="season-stat-row">
+            <div class="cell label">Completed Sets</div>
+            <div class="cell"><span class="s-val" id="s_cs_h1">—</span></div>
+            <div class="cell"><span class="s-val" id="s_cs_h2">—</span></div>
+            <div class="cell" style="background:rgba(29,110,245,.07);border-left:1px solid var(--border)"><span class="s-val" id="s_cs_tot">—</span></div>
+          </div>
+          <div class="season-stat-row alt">
+            <div class="cell label">Non Completed Sets</div>
+            <div class="cell"><span class="s-val" id="s_ncs_h1">—</span></div>
+            <div class="cell"><span class="s-val" id="s_ncs_h2">—</span></div>
+            <div class="cell" style="background:rgba(29,110,245,.07);border-left:1px solid var(--border)"><span class="s-val" id="s_ncs_tot">—</span></div>
+          </div>
+          <div class="season-stat-row auto">
+            <div class="cell label">Combined</div>
+            <div class="cell"><span class="s-val auto-col" id="s_comb_h1">—</span></div>
+            <div class="cell"><span class="s-val auto-col" id="s_comb_h2">—</span></div>
+            <div class="cell" style="background:rgba(29,110,245,.07);border-left:1px solid var(--border)"><span class="s-val auto-col" id="s_comb_tot">—</span></div>
+          </div>
+          <div class="season-stat-row auto alt">
+            <div class="cell label">Completion %</div>
+            <div class="cell"><span class="s-val" id="s_pct_h1">—</span></div>
+            <div class="cell"><span class="s-val" id="s_pct_h2">—</span></div>
+            <div class="cell" style="background:rgba(29,110,245,.07);border-left:1px solid var(--border)"><span class="s-val" id="s_pct_tot">—</span></div>
+          </div>
+          <div class="season-stat-row">
+            <div class="cell label">Penalties For</div>
+            <div class="cell"><span class="s-val" id="s_pf_h1">—</span></div>
+            <div class="cell"><span class="s-val" id="s_pf_h2">—</span></div>
+            <div class="cell" style="background:rgba(29,110,245,.07);border-left:1px solid var(--border)"><span class="s-val" id="s_pf_tot">—</span></div>
+          </div>
+          <div class="season-stat-row alt">
+            <div class="cell label">Penalties Against</div>
+            <div class="cell"><span class="s-val" id="s_pa_h1">—</span></div>
+            <div class="cell"><span class="s-val" id="s_pa_h2">—</span></div>
+            <div class="cell" style="background:rgba(29,110,245,.07);border-left:1px solid var(--border)"><span class="s-val" id="s_pa_tot">—</span></div>
+          </div>
+          <div class="season-stat-row">
+            <div class="cell label">Errors</div>
+            <div class="cell"><span class="s-val" id="s_err_h1">—</span></div>
+            <div class="cell"><span class="s-val" id="s_err_h2">—</span></div>
+            <div class="cell" style="background:rgba(29,110,245,.07);border-left:1px solid var(--border)"><span class="s-val" id="s_err_tot">—</span></div>
+          </div>
+          <div class="rounds-counted" id="roundsCounted">No round data entered yet.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ─── TOAST ─── -->
   <div class="toast" id="toast">Saved ✓</div>
 
@@ -635,8 +785,12 @@
   </div>
 
   <!-- ─── BOTTOM DOTS ─── -->
-  <div class="bottom-bar">
-    <div class="dots-wrap" id="dotsWrap"></div>
+  <div class="bottom-bar" style="display:flex;align-items:center;gap:10px;">
+    <div class="dots-wrap" id="dotsWrap" style="flex:1;"></div>
+    <button class="season-btn" id="seasonBtn" onclick="toggleSeason()">
+      <span class="season-btn-icon">📈</span>
+      <span class="season-btn-label">Season</span>
+    </button>
   </div>
 
   <script>
@@ -908,6 +1062,95 @@
     buildLPO();
     initDB();
     loadRound(1);
+
+    // ─── SEASON AVERAGES ──────────────────────────────
+    let seasonOpen = false;
+
+    function avg(values) {
+      const nums = values.filter(v => v !== '' && v !== null && v !== undefined && !isNaN(Number(v)));
+      if (!nums.length) return null;
+      return nums.reduce((a, b) => a + Number(b), 0) / nums.length;
+    }
+
+    function fmt(val, decimals = 1) {
+      return val === null ? '—' : val.toFixed(decimals);
+    }
+
+    function setPctSpan(id, val) {
+      const el = document.getElementById(id);
+      el.className = 's-val';
+      if (val === null) { el.textContent = '—'; return; }
+      el.textContent = val.toFixed(1) + '%';
+      if (val >= 75) el.classList.add('pct-green');
+      else if (val >= 60) el.classList.add('pct-amber');
+      else el.classList.add('pct-red');
+    }
+
+    function renderSeason() {
+      const metrics = ['cs','ncs','pf','pa','err'];
+      const halves  = ['h1','h2'];
+      const a = {};
+
+      metrics.forEach(m => {
+        halves.forEach(h => {
+          a[`${m}_${h}`] = avg(FIXTURES.map(f => db[f.round]?.stats[`${m}_${h}`]));
+        });
+        // Total = avg(h1) + avg(h2) — only when both halves have data across same rounds
+        // This avoids counting zero from rounds with no data entered
+        const h1 = a[`${m}_h1`], h2 = a[`${m}_h2`];
+        if (h1 !== null && h2 !== null) a[`${m}_tot`] = h1 + h2;
+        else if (h1 !== null)           a[`${m}_tot`] = h1;
+        else if (h2 !== null)           a[`${m}_tot`] = h2;
+        else                            a[`${m}_tot`] = null;
+      });
+
+      // Combined
+      const comb_h1  = (a.cs_h1  !== null || a.ncs_h1  !== null) ? (a.cs_h1 ||0)+(a.ncs_h1 ||0) : null;
+      const comb_h2  = (a.cs_h2  !== null || a.ncs_h2  !== null) ? (a.cs_h2 ||0)+(a.ncs_h2 ||0) : null;
+      const comb_tot = (a.cs_tot !== null || a.ncs_tot !== null)  ? (a.cs_tot||0)+(a.ncs_tot||0) : null;
+
+      // Completion %
+      const pct_h1  = comb_h1  ? (a.cs_h1  / comb_h1)  * 100 : null;
+      const pct_h2  = comb_h2  ? (a.cs_h2  / comb_h2)  * 100 : null;
+      const pct_tot = comb_tot ? ((a.cs_h1||0)+(a.cs_h2||0)) / comb_tot * 100 : null;
+
+      // Set values
+      document.getElementById('s_cs_h1').textContent   = fmt(a.cs_h1);
+      document.getElementById('s_cs_h2').textContent   = fmt(a.cs_h2);
+      document.getElementById('s_cs_tot').textContent  = fmt(a.cs_tot);
+      document.getElementById('s_ncs_h1').textContent  = fmt(a.ncs_h1);
+      document.getElementById('s_ncs_h2').textContent  = fmt(a.ncs_h2);
+      document.getElementById('s_ncs_tot').textContent = fmt(a.ncs_tot);
+      document.getElementById('s_comb_h1').textContent  = fmt(comb_h1);
+      document.getElementById('s_comb_h2').textContent  = fmt(comb_h2);
+      document.getElementById('s_comb_tot').textContent = fmt(comb_tot);
+      setPctSpan('s_pct_h1',  pct_h1);
+      setPctSpan('s_pct_h2',  pct_h2);
+      setPctSpan('s_pct_tot', pct_tot);
+      document.getElementById('s_pf_h1').textContent   = fmt(a.pf_h1);
+      document.getElementById('s_pf_h2').textContent   = fmt(a.pf_h2);
+      document.getElementById('s_pf_tot').textContent  = fmt(a.pf_tot);
+      document.getElementById('s_pa_h1').textContent   = fmt(a.pa_h1);
+      document.getElementById('s_pa_h2').textContent   = fmt(a.pa_h2);
+      document.getElementById('s_pa_tot').textContent  = fmt(a.pa_tot);
+      document.getElementById('s_err_h1').textContent  = fmt(a.err_h1);
+      document.getElementById('s_err_h2').textContent  = fmt(a.err_h2);
+      document.getElementById('s_err_tot').textContent = fmt(a.err_tot);
+
+      const played = FIXTURES.filter(f => roundHasData(f.round)).length;
+      document.getElementById('roundsCounted').textContent =
+        played > 0 ? `Averages across ${played} round${played > 1 ? 's' : ''} with data` : 'No round data entered yet.';
+      document.getElementById('seasonSubtitle').textContent =
+        `2026 BMD Premiership · ${played}/11 rounds`;
+    }
+
+    function toggleSeason() {
+      seasonOpen = !seasonOpen;
+      document.getElementById('mainContent').classList.toggle('hidden', seasonOpen);
+      document.getElementById('seasonView').classList.toggle('active', seasonOpen);
+      document.getElementById('seasonBtn').classList.toggle('active', seasonOpen);
+      if (seasonOpen) renderSeason();
+    }
 
     // Register service worker
     if ('serviceWorker' in navigator) {
